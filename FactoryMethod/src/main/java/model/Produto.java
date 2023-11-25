@@ -9,7 +9,6 @@ package model;
  * @author nitro5
  */
 public class Produto {
-    private int id;
     private String nome;
     private double valor;
 
