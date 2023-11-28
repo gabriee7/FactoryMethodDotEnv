@@ -3,8 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.mycompany.factorymethod.log;
-
 import io.github.cdimascio.dotenv.Dotenv;
+import java.lang.reflect.Method;
 /**
  *
  * @author nitro5WIN10
@@ -17,12 +17,15 @@ public class LogService {
         setMetodo();
     }
     
-    private void setMetodo(){
+    private void setMetodo(){  
         getDotEnv();
-        if(env.equalsIgnoreCase("JSON")){
-            metodoLog = JsonLog.getInstancia();
-        }else{
-            throw new IllegalArgumentException("Tipo arquivo de log não suportado.");
+        try{
+            Class<?> classeEnv = Class.forName(env);
+            Method metodoGetInstancia = classeEnv.getMethod("getInstancia");
+            Object instancia = metodoGetInstancia.invoke(null);
+            metodoLog = (ILog)instancia;
+        }catch(Exception e) {
+            throw new RuntimeException("Erro: LOG não suportado! \n" + e.getMessage());
         }
     }
     

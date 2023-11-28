@@ -6,6 +6,9 @@ package com.mycompany.factorymethod.FactoryDAO;
 
 import com.mycompany.factorymethod.DAO.IProdutoDAO;
 import io.github.cdimascio.dotenv.Dotenv;
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -15,16 +18,18 @@ public class DAOFactoryService {
     private IDAOFactory sgbd;
     private String env;
 
-    public DAOFactoryService() {
+    public DAOFactoryService(){
         this.sgbd = getDAOFactory();
     }
     
     private IDAOFactory getDAOFactory(){
         getDotEnv();
-        if(env.equalsIgnoreCase("SQLITE")){
-            return new SQLiteFactory();
-        }else{
-            throw new IllegalArgumentException("SGBD não suportado.");
+        try{
+            Class<?> classeEnv = Class.forName(env);
+            Object instancia = classeEnv.getDeclaredConstructor().newInstance();
+            return (IDAOFactory)instancia;
+        }catch(Exception e) {
+            throw new RuntimeException("Erro: SGBD não suportado! \n" + e.getMessage());
         }
     }
     
